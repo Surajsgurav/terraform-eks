@@ -6,13 +6,13 @@
 
 # Create a VPC to launch our instances into
 resource "aws_vpc" "vpc" {
-  cidr_block = "${var.vpc["main"]}"
+  cidr_block = var.vpc["main"]
 
   tags = "${
     map(
-     "Name", "${var.env}-vpc",
-     "Environment", "${var.env}",
-     "kubernetes.io/cluster/${var.cluster_defaults["name"]}", "shared"
+     "Name", "var.env-vpc",
+     "Environment", var.env,
+     "kubernetes.io/cluster/var.cluster_defaults["name"]", "shared"
     )
   }"
 }
@@ -27,7 +27,7 @@ resource "aws_vpc" "vpc" {
 provider "aws" {
   shared_credentials_file = "./credentials"
   profile                 = "live"
-  region                  = "${var.region}"
+  region                  = var.region
 }
 
 # Using these data sources allows the configuration to be
@@ -50,17 +50,17 @@ provider "http" {}
 
 # Create an internet gateway to give our subnet access to the outside world
 resource "aws_internet_gateway" "igw" {
-  vpc_id = "${aws_vpc.vpc.id}"
+  vpc_id = aws_vpc.vpc.id
 
   tags {
-    Name        = "${var.env}-igw"
-    Environment = "${var.env}"
+    Name        = var.env-igw
+    Environment = var.env
   }
 }
 
 ## keypair for ec2
 resource "aws_key_pair" "eks-prod-key" {
-  key_name   = "${var.nodes_defaults["key_name"]}"
-  public_key = "${file("./it-admin-key.pub")}"
+  key_name   = var.nodes_defaults["key_name"]
+  public_key = file("./it-admin-key.pub")
 }
 
