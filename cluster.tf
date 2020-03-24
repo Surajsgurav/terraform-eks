@@ -5,7 +5,7 @@
 #\____|_____\___/|____/ |_| |_____|_| \_\
 
 resource "aws_security_group" "eks-cluster" {
-  name        = "${var.cluster_defaults["name"]}"
+  name        = "${var.cluster_defaults["eks_securitygrp"]}"
   description = "Cluster communication with worker nodes"
   vpc_id      = "${aws_vpc.vpc.id}"
 
@@ -17,7 +17,7 @@ resource "aws_security_group" "eks-cluster" {
   }
 
   tags {
-    Name        = "${var.cluster_defaults["name"]}-sg"
+    Name        = "${var.cluster_defaults["eks_sg"]}-sg"
     Environment = "${var.env}"
   }
 }
@@ -43,7 +43,7 @@ resource "aws_security_group_rule" "cluster-ingress-laptop-https" {
 }
 
 resource "aws_eks_cluster" "eks-cluster" {
-  name     = "${var.cluster_defaults["name"]}"
+  name     = "${var.cluster_defaults["eks_cluster"]}"
   role_arn = "${aws_iam_role.eks-cluster.arn}"
 
   vpc_config {
@@ -62,7 +62,7 @@ resource "aws_eks_cluster" "eks-cluster" {
 }
 
 resource "aws_iam_role" "eks-cluster" {
-  name               = "${var.cluster_defaults["name"]}"
+  name               = "${var.cluster_defaults["eks_iam"]}"
   path               = "/"
   assume_role_policy = "${file("./json/cluster-role-policy.json")}"
 }
